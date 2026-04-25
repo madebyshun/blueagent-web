@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #050508;
+  --blue: #4FC3F7;
+  --purple: #A78BFA;
+  --surface: #0D0D14;
+  --border: #1A1A2E;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: #E2E8F0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #1A1A2E; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2A2A4E; }
+
+/* Selection */
+::selection { background: rgba(79,195,247,0.3); color: #fff; }
+
+@layer utilities {
+  .text-gradient-blue {
+    background: linear-gradient(135deg, #4FC3F7 0%, #A78BFA 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-white {
+    background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .border-glow-blue {
+    border-color: rgba(79,195,247,0.3);
+    box-shadow: 0 0 20px rgba(79,195,247,0.1), inset 0 0 20px rgba(79,195,247,0.05);
+  }
+
+  .border-glow-purple {
+    border-color: rgba(167,139,250,0.3);
+    box-shadow: 0 0 20px rgba(167,139,250,0.1), inset 0 0 20px rgba(167,139,250,0.05);
+  }
+
+  .card-surface {
+    background: rgba(13,13,20,0.8);
+    border: 1px solid #1A1A2E;
+    backdrop-filter: blur(12px);
+  }
+
+  .card-hover {
+    transition: all 0.3s ease;
+  }
+
+  .card-hover:hover {
+    border-color: rgba(79,195,247,0.3);
+    box-shadow: 0 0 30px rgba(79,195,247,0.08);
+    transform: translateY(-2px);
+  }
+
+  .glow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4FC3F7;
+    box-shadow: 0 0 8px #4FC3F7, 0 0 16px rgba(79,195,247,0.5);
+  }
+}
