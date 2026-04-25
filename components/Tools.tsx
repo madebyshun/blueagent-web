@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import ToolRunner from "./ToolRunner";
 
 type Tool = {
   id: string;
@@ -67,54 +68,17 @@ const categoryColors: Record<string, string> = {
   Alerts:    "text-pink-400 bg-pink-400/10 border-pink-400/20",
 };
 
-function getSnippet(tool: Tool) {
-  return `// ${tool.description}
-// ${tool.price}/call · USDC on Base · x402 protocol
-
-import { wrapFetchWithPayment } from "x402-fetch";
-import { createWalletClient, http } from "viem";
-import { base } from "viem/chains";
-
-const wallet = createWalletClient({
-  account: privateKeyToAccount(process.env.PRIVATE_KEY),
-  chain: base,
-  transport: http(),
-});
-
-const secureFetch = wrapFetchWithPayment(fetch, wallet);
-
-const res = await secureFetch(
-  "${BASE_URL}/${tool.id}",
-  {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ /* see README for params */ }),
-  }
-);
-
-const result = await res.json();`;
-}
 
 function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
-  const [copied, setCopied] = useState(false);
-  const snippet = getSnippet(tool);
-
-  const copy = () => {
-    navigator.clipboard.writeText(snippet).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
       <div
-        className="relative w-full sm:max-w-xl bg-[#0D0D14] border border-[#1A1A2E] rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl"
+        className="relative w-full sm:max-w-xl bg-[#0D0D14] border border-[#1A1A2E] rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1A1A2E]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1A1A2E] shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-2 h-2 rounded-full bg-[#4FC3F7] shadow-[0_0_6px_#4FC3F7]" />
             <span className="font-mono font-semibold text-white text-sm">{tool.name}</span>
@@ -129,7 +93,8 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
           </button>
         </div>
 
-        <div className="p-5 space-y-4">
+        {/* Scrollable body */}
+        <div className="p-5 space-y-4 overflow-y-auto">
           {/* Description + price */}
           <div className="flex items-start justify-between gap-4">
             <p className="text-sm text-slate-400">{tool.description}</p>
@@ -146,37 +111,20 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
             </span>
           </div>
 
-          {/* Code snippet */}
-          <div className="relative">
-            <div className="flex items-center justify-between bg-[#080810] border border-[#1A1A2E] border-b-0 px-4 py-2 rounded-t-lg">
-              <span className="font-mono text-xs text-slate-500">TypeScript · x402-fetch</span>
-              <button
-                onClick={copy}
-                className="flex items-center gap-1.5 font-mono text-xs text-slate-500 hover:text-[#4FC3F7] transition-colors"
-              >
-                {copied ? (
-                  <><svg className="w-3.5 h-3.5 text-[#4FC3F7]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg><span className="text-[#4FC3F7]">Copied!</span></>
-                ) : (
-                  <><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>Copy</>
-                )}
-              </button>
-            </div>
-            <pre className="bg-[#050508] border border-[#1A1A2E] rounded-b-lg p-4 overflow-x-auto max-h-56">
-              <code className="font-mono text-xs text-slate-300 leading-6 whitespace-pre">{snippet}</code>
-            </pre>
-          </div>
+          {/* Live tool runner */}
+          <ToolRunner toolId={tool.id} price={tool.price} />
 
-          {/* CTA */}
+          {/* GitHub source */}
           <a
             href={`https://github.com/madebyshun/blueagent-x402-services/tree/main/x402/${tool.id}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full bg-[#4FC3F7] hover:bg-[#29ABE2] text-[#050508] font-mono font-semibold text-sm py-3 rounded-xl transition-all"
+            className="flex items-center justify-center gap-2 text-slate-600 hover:text-[#4FC3F7] font-mono text-xs transition-colors py-1"
           >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
             </svg>
-            View source for {tool.name}
+            View source on GitHub
           </a>
         </div>
       </div>

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import ConnectWallet from "./ConnectWallet";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -36,12 +37,7 @@ export default function Navbar() {
             >
               GitHub
             </a>
-            <a
-              href="#how-it-works"
-              className="text-sm font-mono bg-[#4FC3F7] text-[#050508] font-semibold px-4 py-1.5 rounded hover:bg-[#29ABE2] transition-colors"
-            >
-              Get Started
-            </a>
+            <ConnectWallet />
           </div>
 
           <button
@@ -72,13 +68,7 @@ export default function Navbar() {
               {item}
             </a>
           ))}
-          <a
-            href="#how-it-works"
-            className="text-sm font-mono bg-[#4FC3F7] text-[#050508] font-semibold px-4 py-2 rounded text-center"
-            onClick={() => setOpen(false)}
-          >
-            Get Started
-          </a>
+          <ConnectWallet />
         </div>
       )}
     </nav>
