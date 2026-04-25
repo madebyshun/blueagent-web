@@ -68,18 +68,19 @@ const categoryColors: Record<string, string> = {
 function getSnippet(tool: Tool) {
   return `// ${tool.description}
 // Cost: ${tool.price}/call · Paid in USDC on Base via x402
+// Source: github.com/madebyshun/blueagent-x402-services
 
-const response = await fetch(
-  "https://api.blueagent.xyz/v1/${tool.id}",
+import { withPaymentHeader } from "x402-fetch";
+
+const secureFetch = withPaymentHeader(fetch, wallet);
+
+const response = await secureFetch(
+  \`\${YOUR_BLUEAGENT_URL}/v1/${tool.id}\`,
   {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      // x402 payment header added automatically
-      // by blueagent-sdk or x402-fetch wrapper
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      // see docs for ${tool.id} params
+      // see README for ${tool.id} params
     }),
   }
 );
@@ -140,7 +141,7 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
           <div className="flex items-center gap-2 bg-[#050508] border border-[#1A1A2E] rounded-lg px-3 py-2">
             <span className="font-mono text-xs text-slate-500 shrink-0">POST</span>
             <span className="font-mono text-xs text-[#4FC3F7] truncate">
-              https://api.blueagent.xyz/v1/{tool.id}
+              $&#123;YOUR_BLUEAGENT_URL&#125;/v1/{tool.id}
             </span>
           </div>
 
