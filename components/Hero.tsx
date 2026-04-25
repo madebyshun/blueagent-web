@@ -3,7 +3,7 @@ import { useState } from "react";
 
 const stats = [
   { value: "31", label: "Security Tools" },
-  { value: "$0.001", label: "Min. per Call" },
+  { value: "$0.05", label: "Min. per Call" },
   { value: "Base", label: "Network" },
   { value: "x402", label: "Protocol" },
 ];

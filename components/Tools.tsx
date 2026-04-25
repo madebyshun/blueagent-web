@@ -9,83 +9,90 @@ type Tool = {
   category: string;
 };
 
+const BASE_URL = "https://x402.bankr.bot/0xf31f59e7b8b58555f7871f71973a394c8f1bffe5";
+
 const ALL_TOOLS: Tool[] = [
-  // Address Security
-  { id: "address-screener", name: "address-screener", description: "Real-time OFAC & sanctions address screening", price: "$0.001", category: "Address" },
-  { id: "wallet-profiler", name: "wallet-profiler", description: "On-chain risk profile & behavioral analysis", price: "$0.004", category: "Address" },
-  { id: "poison-address", name: "poison-address", description: "Address poisoning & typosquatting detector", price: "$0.002", category: "Address" },
-  { id: "ens-validator", name: "ens-validator", description: "ENS name resolution & spoofing check", price: "$0.001", category: "Address" },
+  // Security
+  { id: "risk-gate",       name: "risk-gate",       description: "Pre-transaction safety checks for autonomous agents",           price: "$0.05",  category: "Security" },
+  { id: "honeypot-check",  name: "honeypot-check",  description: "Identifies honeypot / rug-pull contracts before trading",       price: "$0.05",  category: "Security" },
+  { id: "allowance-audit", name: "allowance-audit", description: "Audit dangerous token approvals — find unlimited allowances",   price: "$0.20",  category: "Security" },
+  { id: "phishing-scan",   name: "phishing-scan",   description: "Evaluates URLs, contracts, and handles for scam indicators",   price: "$0.10",  category: "Security" },
+  { id: "mev-shield",      name: "mev-shield",      description: "Analyzes sandwich attack risks for large swaps",                price: "$0.30",  category: "Security" },
+  { id: "contract-trust",  name: "contract-trust",  description: "Trust scoring for contract safety and AI interaction",          price: "$0.25",  category: "Security" },
+  { id: "circuit-breaker", name: "circuit-breaker", description: "Halts autonomous agent actions during risk scenarios",          price: "$0.50",  category: "Security" },
 
-  // Transaction Security
-  { id: "tx-simulator", name: "tx-simulator", description: "Pre-execution transaction simulation & risk scoring", price: "$0.005", category: "Transaction" },
-  { id: "tx-explainer", name: "tx-explainer", description: "Human-readable transaction decoder", price: "$0.002", category: "Transaction" },
-  { id: "mev-detector", name: "mev-detector", description: "MEV attack pattern detection & frontrun alerts", price: "$0.003", category: "Transaction" },
-  { id: "front-run-shield", name: "front-run-shield", description: "Frontrunning & sandwich attack protection", price: "$0.004", category: "Transaction" },
-  { id: "gas-anomaly", name: "gas-anomaly", description: "Gas price anomaly detection & manipulation alerts", price: "$0.001", category: "Transaction" },
-  { id: "slippage-monitor", name: "slippage-monitor", description: "Slippage monitoring & tolerance enforcement", price: "$0.002", category: "Transaction" },
-  { id: "drain-simulator", name: "drain-simulator", description: "Wallet drain simulation before execution", price: "$0.005", category: "Transaction" },
+  // Quantum
+  { id: "key-exposure",      name: "key-exposure",      description: "Detects if wallet public keys are exposed on-chain",               price: "$0.50",  category: "Quantum" },
+  { id: "quantum-premium",   name: "quantum-premium",   description: "Quantum vulnerability score for any wallet — public key analysis", price: "$1.50",  category: "Quantum" },
+  { id: "quantum-batch",     name: "quantum-batch",     description: "Scans 1–10 wallets for quantum exposure at $0.25 each",            price: "$2.50",  category: "Quantum" },
+  { id: "quantum-migrate",   name: "quantum-migrate",   description: "Migration planning with step-by-step guidance and timeline",       price: "$2.00",  category: "Quantum" },
+  { id: "quantum-timeline",  name: "quantum-timeline",  description: "Quantum threat timeline — when CRQC arrives, milestones",         price: "$0.40",  category: "Quantum" },
 
-  // Token Security
-  { id: "token-screener", name: "token-screener", description: "Token contract security score & honeypot check", price: "$0.002", category: "Token" },
-  { id: "honeypot-checker", name: "honeypot-checker", description: "Honeypot token buy/sell simulation", price: "$0.003", category: "Token" },
-  { id: "rug-analyzer", name: "rug-analyzer", description: "Rug pull probability & liquidity lock verification", price: "$0.005", category: "Token" },
-  { id: "approval-monitor", name: "approval-monitor", description: "ERC-20 approval risk & unlimited allowance alerts", price: "$0.002", category: "Token" },
-  { id: "permit-guardian", name: "permit-guardian", description: "ERC-20 Permit signature abuse prevention", price: "$0.002", category: "Token" },
+  // Research
+  { id: "deep-analysis",     name: "deep-analysis",     description: "Deep due diligence for any Base token or project",              price: "$0.35",  category: "Research" },
+  { id: "launch-advisor",    name: "launch-advisor",    description: "Complete token launch strategy with 8-week timeline",           price: "$3.00",  category: "Research" },
+  { id: "grant-evaluator",   name: "grant-evaluator",   description: "Ecosystem grant scoring framework",                             price: "$5.00",  category: "Research" },
+  { id: "x402-readiness",    name: "x402-readiness",    description: "API readiness audit for x402 payment protocol integration",     price: "$1.00",  category: "Research" },
+  { id: "base-deploy-check", name: "base-deploy-check", description: "Pre-deployment contract security verification on Base",         price: "$0.50",  category: "Research" },
+  { id: "tokenomics-score",  name: "tokenomics-score",  description: "Supply and vesting sustainability analysis",                    price: "$0.50",  category: "Research" },
+  { id: "whitepaper-tldr",   name: "whitepaper-tldr",   description: "Five-bullet summary of any project documentation",             price: "$0.20",  category: "Research" },
+  { id: "vc-tracker",        name: "vc-tracker",        description: "Investment activity and sector thesis tracking",                price: "$1.00",  category: "Research" },
 
-  // Smart Contract
-  { id: "contract-auditor", name: "contract-auditor", description: "Automated smart contract vulnerability analysis", price: "$0.010", category: "Contract" },
-  { id: "defi-risk-score", name: "defi-risk-score", description: "DeFi protocol risk & TVL security assessment", price: "$0.005", category: "Contract" },
-  { id: "flash-loan-guard", name: "flash-loan-guard", description: "Flash loan attack vector detection", price: "$0.005", category: "Contract" },
-  { id: "proxy-inspector", name: "proxy-inspector", description: "Proxy upgrade pattern & admin key risk check", price: "$0.003", category: "Contract" },
-  { id: "bridge-validator", name: "bridge-validator", description: "Cross-chain bridge security verification", price: "$0.004", category: "Contract" },
-  { id: "zero-day-scanner", name: "zero-day-scanner", description: "Novel vulnerability pattern recognition", price: "$0.008", category: "Contract" },
+  // Analytics
+  { id: "wallet-pnl",     name: "wallet-pnl",     description: "Wallet PnL report — trading style, win rate, smart money signals", price: "$1.00",  category: "Analytics" },
+  { id: "whale-tracker",  name: "whale-tracker",  description: "Smart money accumulation / distribution signals",                  price: "$0.10",  category: "Analytics" },
+  { id: "aml-screen",     name: "aml-screen",     description: "Compliance screening with transaction pattern analysis",           price: "$0.25",  category: "Analytics" },
+  { id: "airdrop-check",  name: "airdrop-check",  description: "Base airdrop eligibility assessment",                             price: "$0.10",  category: "Analytics" },
+  { id: "narrative-pulse",name: "narrative-pulse",description: "Trending topics and emerging opportunities on Base",              price: "$0.40",  category: "Analytics" },
+  { id: "dex-flow",       name: "dex-flow",       description: "Real-time DEX volume and liquidity pressure metrics",             price: "$0.15",  category: "Analytics" },
 
-  // Agent Security
-  { id: "prompt-injection", name: "prompt-injection", description: "Prompt injection & jailbreak attempt detection", price: "$0.003", category: "Agent" },
-  { id: "agent-rate-limit", name: "agent-rate-limit", description: "Rate limiting & abuse throttle for agents", price: "$0.001", category: "Agent" },
-  { id: "api-key-leak", name: "api-key-leak", description: "API key & secret exposure scanner", price: "$0.002", category: "Agent" },
-  { id: "entropy-checker", name: "entropy-checker", description: "Private key & seed entropy validation", price: "$0.003", category: "Agent" },
-  { id: "signature-verifier", name: "signature-verifier", description: "Cryptographic signature authenticity check", price: "$0.001", category: "Agent" },
+  // Portfolio
+  { id: "yield-optimizer", name: "yield-optimizer", description: "Best APY opportunities on Base DeFi — live rates",               price: "$0.15",  category: "Portfolio" },
+  { id: "lp-analyzer",     name: "lp-analyzer",     description: "LP position analysis with rebalancing recommendations",          price: "$0.25",  category: "Portfolio" },
+  { id: "tax-report",      name: "tax-report",      description: "Annual tax summary with realized gains and P&L",                 price: "$2.00",  category: "Portfolio" },
 
-  // Compliance
-  { id: "compliance-check", name: "compliance-check", description: "Regulatory compliance & AML risk scoring", price: "$0.005", category: "Compliance" },
-  { id: "chain-monitor", name: "chain-monitor", description: "Real-time on-chain event monitoring", price: "$0.003", category: "Compliance" },
-  { id: "multichain-check", name: "multichain-check", description: "Cross-chain address reputation lookup", price: "$0.004", category: "Compliance" },
-  { id: "nft-fraud-check", name: "nft-fraud-check", description: "NFT wash trading & fraud pattern detection", price: "$0.003", category: "Compliance" },
+  // Alerts
+  { id: "alert-subscribe", name: "alert-subscribe", description: "Webhook-based real-time alerts for whale / risk events",  price: "$0.50",  category: "Alerts" },
+  { id: "alert-check",     name: "alert-check",     description: "Query active alert triggers for specific addresses",      price: "$0.10",  category: "Alerts" },
 ];
 
-const CATEGORIES = ["All", "Address", "Transaction", "Token", "Contract", "Agent", "Compliance"];
+const CATEGORIES = ["All", "Security", "Quantum", "Research", "Analytics", "Portfolio", "Alerts"];
 
 const categoryColors: Record<string, string> = {
-  Address: "text-[#4FC3F7] bg-[#4FC3F7]/10 border-[#4FC3F7]/20",
-  Transaction: "text-[#A78BFA] bg-[#A78BFA]/10 border-[#A78BFA]/20",
-  Token: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
-  Contract: "text-orange-400 bg-orange-400/10 border-orange-400/20",
-  Agent: "text-pink-400 bg-pink-400/10 border-pink-400/20",
-  Compliance: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+  Security:  "text-[#4FC3F7] bg-[#4FC3F7]/10 border-[#4FC3F7]/20",
+  Quantum:   "text-[#A78BFA] bg-[#A78BFA]/10 border-[#A78BFA]/20",
+  Research:  "text-emerald-400 bg-emerald-400/10 border-emerald-400/20",
+  Analytics: "text-orange-400 bg-orange-400/10 border-orange-400/20",
+  Portfolio: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+  Alerts:    "text-pink-400 bg-pink-400/10 border-pink-400/20",
 };
 
 function getSnippet(tool: Tool) {
   return `// ${tool.description}
-// Cost: ${tool.price}/call · Paid in USDC on Base via x402
-// Source: github.com/madebyshun/blueagent-x402-services
+// ${tool.price}/call · USDC on Base · x402 protocol
 
-import { withPaymentHeader } from "x402-fetch";
+import { wrapFetchWithPayment } from "x402-fetch";
+import { createWalletClient, http } from "viem";
+import { base } from "viem/chains";
 
-const secureFetch = withPaymentHeader(fetch, wallet);
+const wallet = createWalletClient({
+  account: privateKeyToAccount(process.env.PRIVATE_KEY),
+  chain: base,
+  transport: http(),
+});
 
-const response = await secureFetch(
-  \`\${YOUR_BLUEAGENT_URL}/v1/${tool.id}\`,
+const secureFetch = wrapFetchWithPayment(fetch, wallet);
+
+const res = await secureFetch(
+  "${BASE_URL}/${tool.id}",
   {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      // see README for ${tool.id} params
-    }),
+    body: JSON.stringify({ /* see README for params */ }),
   }
 );
 
-const result = await response.json();`;
+const result = await res.json();`;
 }
 
 function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
@@ -100,14 +107,8 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      onClick={onClose}
-    >
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4" onClick={onClose}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-
-      {/* Modal */}
       <div
         className="relative w-full sm:max-w-xl bg-[#0D0D14] border border-[#1A1A2E] rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
@@ -130,54 +131,44 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
 
         <div className="p-5 space-y-4">
           {/* Description + price */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between gap-4">
             <p className="text-sm text-slate-400">{tool.description}</p>
-            <span className="font-mono text-[#4FC3F7] font-bold text-sm ml-4 whitespace-nowrap">
+            <span className="font-mono text-[#4FC3F7] font-bold text-sm whitespace-nowrap">
               {tool.price}<span className="text-slate-500 font-normal">/call</span>
             </span>
           </div>
 
           {/* Endpoint */}
-          <div className="flex items-center gap-2 bg-[#050508] border border-[#1A1A2E] rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 bg-[#050508] border border-[#1A1A2E] rounded-lg px-3 py-2 overflow-x-auto">
             <span className="font-mono text-xs text-slate-500 shrink-0">POST</span>
-            <span className="font-mono text-xs text-[#4FC3F7] truncate">
-              $&#123;YOUR_BLUEAGENT_URL&#125;/v1/{tool.id}
+            <span className="font-mono text-xs text-[#4FC3F7] whitespace-nowrap">
+              {BASE_URL}/{tool.id}
             </span>
           </div>
 
           {/* Code snippet */}
           <div className="relative">
-            <div className="flex items-center justify-between bg-[#080810] border-b border-[#1A1A2E] px-4 py-2 rounded-t-lg">
-              <span className="font-mono text-xs text-slate-500">TypeScript · x402</span>
+            <div className="flex items-center justify-between bg-[#080810] border border-[#1A1A2E] border-b-0 px-4 py-2 rounded-t-lg">
+              <span className="font-mono text-xs text-slate-500">TypeScript · x402-fetch</span>
               <button
                 onClick={copy}
                 className="flex items-center gap-1.5 font-mono text-xs text-slate-500 hover:text-[#4FC3F7] transition-colors"
               >
                 {copied ? (
-                  <>
-                    <svg className="w-3.5 h-3.5 text-[#4FC3F7]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span className="text-[#4FC3F7]">Copied!</span>
-                  </>
+                  <><svg className="w-3.5 h-3.5 text-[#4FC3F7]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg><span className="text-[#4FC3F7]">Copied!</span></>
                 ) : (
-                  <>
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                    Copy
-                  </>
+                  <><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>Copy</>
                 )}
               </button>
             </div>
-            <pre className="bg-[#050508] border border-t-0 border-[#1A1A2E] rounded-b-lg p-4 overflow-x-auto">
+            <pre className="bg-[#050508] border border-[#1A1A2E] rounded-b-lg p-4 overflow-x-auto max-h-56">
               <code className="font-mono text-xs text-slate-300 leading-6 whitespace-pre">{snippet}</code>
             </pre>
           </div>
 
           {/* CTA */}
           <a
-            href="https://github.com/madebyshun/blueagent-x402-services"
+            href={`https://github.com/madebyshun/blueagent-x402-services/tree/main/x402/${tool.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 w-full bg-[#4FC3F7] hover:bg-[#29ABE2] text-[#050508] font-mono font-semibold text-sm py-3 rounded-xl transition-all"
@@ -185,7 +176,7 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
             </svg>
-            View full docs on GitHub
+            View source for {tool.name}
           </a>
         </div>
       </div>
@@ -209,7 +200,6 @@ export default function Tools() {
   return (
     <section id="tools" className="py-24 sm:py-32 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 border border-[#1A1A2E] rounded-full px-4 py-1.5 mb-6">
             <span className="font-mono text-xs text-slate-500 tracking-widest">
@@ -238,7 +228,6 @@ export default function Tools() {
               className="w-full pl-10 pr-4 py-2 bg-[#0D0D14] border border-[#1A1A2E] rounded-lg font-mono text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#4FC3F7]/40 transition-colors"
             />
           </div>
-
           <div className="flex flex-wrap gap-2">
             {CATEGORIES.map((cat) => (
               <button
@@ -259,13 +248,17 @@ export default function Tools() {
         {/* Tools Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((tool) => (
-            <div key={tool.id} className="card-surface rounded-xl p-5 card-hover group cursor-pointer" onClick={() => setSelected(tool)}>
+            <div
+              key={tool.id}
+              className="card-surface rounded-xl p-5 card-hover group cursor-pointer"
+              onClick={() => setSelected(tool)}
+            >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-[#4FC3F7] opacity-60" />
                   <span className="font-mono text-sm font-medium text-white">{tool.name}</span>
                 </div>
-                <span className={`font-mono text-xs px-2 py-0.5 rounded border ${categoryColors[tool.category] || "text-slate-400 bg-slate-400/10 border-slate-400/20"}`}>
+                <span className={`font-mono text-xs px-2 py-0.5 rounded border ${categoryColors[tool.category]}`}>
                   {tool.category}
                 </span>
               </div>
@@ -293,7 +286,6 @@ export default function Tools() {
         </p>
       </div>
 
-      {/* Tool detail modal */}
       {selected && <ToolModal tool={selected} onClose={() => setSelected(null)} />}
     </section>
   );
