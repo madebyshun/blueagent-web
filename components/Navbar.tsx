@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import ConnectWallet from "./ConnectWallet";
 
-const X_URL = "https://x.com/blueagentxyz";
+const X_URL = "https://x.com/blocky_agent";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);

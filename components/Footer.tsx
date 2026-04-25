@@ -62,7 +62,7 @@ export function Footer() {
 
           <div className="flex items-center gap-6">
             <a
-              href="https://x.com/blueagentxyz"
+              href="https://x.com/blocky_agent"
               target="_blank"
               rel="noopener noreferrer"
               className="font-mono text-xs text-slate-500 hover:text-[#4FC3F7] transition-colors flex items-center gap-1.5"
