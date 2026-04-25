@@ -65,9 +65,137 @@ const categoryColors: Record<string, string> = {
   Compliance: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
 };
 
+function getSnippet(tool: Tool) {
+  return `// ${tool.description}
+// Cost: ${tool.price}/call · Paid in USDC on Base via x402
+
+const response = await fetch(
+  "https://api.blueagent.xyz/v1/${tool.id}",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      // x402 payment header added automatically
+      // by blueagent-sdk or x402-fetch wrapper
+    },
+    body: JSON.stringify({
+      // see docs for ${tool.id} params
+    }),
+  }
+);
+
+const result = await response.json();`;
+}
+
+function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const snippet = getSnippet(tool);
+
+  const copy = () => {
+    navigator.clipboard.writeText(snippet).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+
+      {/* Modal */}
+      <div
+        className="relative w-full sm:max-w-xl bg-[#0D0D14] border border-[#1A1A2E] rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1A1A2E]">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-[#4FC3F7] shadow-[0_0_6px_#4FC3F7]" />
+            <span className="font-mono font-semibold text-white text-sm">{tool.name}</span>
+            <span className={`font-mono text-xs px-2 py-0.5 rounded border ${categoryColors[tool.category]}`}>
+              {tool.category}
+            </span>
+          </div>
+          <button onClick={onClose} className="text-slate-500 hover:text-white transition-colors p-1">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="p-5 space-y-4">
+          {/* Description + price */}
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-slate-400">{tool.description}</p>
+            <span className="font-mono text-[#4FC3F7] font-bold text-sm ml-4 whitespace-nowrap">
+              {tool.price}<span className="text-slate-500 font-normal">/call</span>
+            </span>
+          </div>
+
+          {/* Endpoint */}
+          <div className="flex items-center gap-2 bg-[#050508] border border-[#1A1A2E] rounded-lg px-3 py-2">
+            <span className="font-mono text-xs text-slate-500 shrink-0">POST</span>
+            <span className="font-mono text-xs text-[#4FC3F7] truncate">
+              https://api.blueagent.xyz/v1/{tool.id}
+            </span>
+          </div>
+
+          {/* Code snippet */}
+          <div className="relative">
+            <div className="flex items-center justify-between bg-[#080810] border-b border-[#1A1A2E] px-4 py-2 rounded-t-lg">
+              <span className="font-mono text-xs text-slate-500">TypeScript · x402</span>
+              <button
+                onClick={copy}
+                className="flex items-center gap-1.5 font-mono text-xs text-slate-500 hover:text-[#4FC3F7] transition-colors"
+              >
+                {copied ? (
+                  <>
+                    <svg className="w-3.5 h-3.5 text-[#4FC3F7]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-[#4FC3F7]">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Copy
+                  </>
+                )}
+              </button>
+            </div>
+            <pre className="bg-[#050508] border border-t-0 border-[#1A1A2E] rounded-b-lg p-4 overflow-x-auto">
+              <code className="font-mono text-xs text-slate-300 leading-6 whitespace-pre">{snippet}</code>
+            </pre>
+          </div>
+
+          {/* CTA */}
+          <a
+            href="https://github.com/madebyshun/blueagent-x402-services"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full bg-[#4FC3F7] hover:bg-[#29ABE2] text-[#050508] font-mono font-semibold text-sm py-3 rounded-xl transition-all"
+          >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+            View full docs on GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Tools() {
   const [active, setActive] = useState("All");
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState<Tool | null>(null);
 
   const filtered = ALL_TOOLS.filter((t) => {
     const matchCat = active === "All" || t.category === active;
@@ -130,24 +258,24 @@ export default function Tools() {
         {/* Tools Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((tool) => (
-            <div key={tool.id} className="card-surface rounded-xl p-5 card-hover group">
+            <div key={tool.id} className="card-surface rounded-xl p-5 card-hover group cursor-pointer" onClick={() => setSelected(tool)}>
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-[#4FC3F7] opacity-60" />
                   <span className="font-mono text-sm font-medium text-white">{tool.name}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`font-mono text-xs px-2 py-0.5 rounded border ${categoryColors[tool.category] || "text-slate-400 bg-slate-400/10 border-slate-400/20"}`}
-                  >
-                    {tool.category}
-                  </span>
-                </div>
+                <span className={`font-mono text-xs px-2 py-0.5 rounded border ${categoryColors[tool.category] || "text-slate-400 bg-slate-400/10 border-slate-400/20"}`}>
+                  {tool.category}
+                </span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed mb-4">{tool.description}</p>
               <div className="flex items-center justify-between">
-                <span className="font-mono text-[#4FC3F7] font-semibold text-sm">{tool.price}<span className="text-slate-500 font-normal">/call</span></span>
-                <span className="font-mono text-xs text-slate-600 group-hover:text-[#4FC3F7] transition-colors">→ use tool</span>
+                <span className="font-mono text-[#4FC3F7] font-semibold text-sm">
+                  {tool.price}<span className="text-slate-500 font-normal">/call</span>
+                </span>
+                <span className="font-mono text-xs text-slate-600 group-hover:text-[#4FC3F7] transition-colors">
+                  → use tool
+                </span>
               </div>
             </div>
           ))}
@@ -163,6 +291,9 @@ export default function Tools() {
           {filtered.length} of {ALL_TOOLS.length} tools shown
         </p>
       </div>
+
+      {/* Tool detail modal */}
+      {selected && <ToolModal tool={selected} onClose={() => setSelected(null)} />}
     </section>
   );
 }
