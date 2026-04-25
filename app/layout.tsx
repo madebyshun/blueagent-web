@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "BlueAgent — Security OS for Autonomous Agents on Base",
@@ -27,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body><Providers>{children}</Providers></body>
+      <body><Providers><Navbar />{children}</Providers></body>
     </html>
   );
 }

@@ -52,7 +52,7 @@ const colorMap: Record<string, { border: string; badge: string; glow: string }> 
   },
 };
 
-export default function Pricing() {
+export function Pricing() {
   return (
     <section id="pricing" className="py-24 sm:py-32 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#070710]/60 to-transparent" />

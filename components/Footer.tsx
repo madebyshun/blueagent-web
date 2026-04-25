@@ -1,4 +1,4 @@
-export default function Footer() {
+export function Footer() {
   return (
     <footer className="relative border-t border-[#1A1A2E]">
       {/* CTA Section */}

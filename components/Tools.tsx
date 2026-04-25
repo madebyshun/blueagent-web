@@ -132,7 +132,7 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
   );
 }
 
-export default function Tools() {
+export function Tools() {
   const [active, setActive] = useState("All");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Tool | null>(null);

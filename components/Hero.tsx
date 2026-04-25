@@ -8,7 +8,7 @@ const stats = [
   { value: "x402", label: "Protocol" },
 ];
 
-export default function Hero() {
+export function Hero() {
   const [copied, setCopied] = useState(false);
   const installCmd = "npx blueagent-mcp init";
 

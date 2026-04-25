@@ -63,7 +63,7 @@ const colorMap: Record<string, { tag: string; accent: string; border: string; bg
   },
 };
 
-export default function Integrations() {
+export function Integrations() {
   return (
     <section id="integrations" className="py-24 sm:py-32 relative">
       {/* Section background */}

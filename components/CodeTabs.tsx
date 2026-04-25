@@ -133,7 +133,7 @@ function highlight(code: string, lang: string): React.ReactNode[] {
   });
 }
 
-export default function CodeTabs() {
+export function CodeTabs() {
   const [active, setActive] = useState<Tab>("MCP");
   const { lang, code } = CODE[active];
 
