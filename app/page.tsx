@@ -1,4 +1,5 @@
 import { Hero } from '@/components/Hero'
+import { StatsBar } from '@/components/StatsBar'
 import { EcosystemBar } from '@/components/EcosystemBar'
 import { HowItWorks } from '@/components/HowItWorks'
 import { X402Explainer } from '@/components/X402Explainer'
@@ -15,16 +16,27 @@ export default function Home() {
   return (
     <main>
       <Hero />
+      <StatsBar />
       <EcosystemBar />
-      <HowItWorks />
+      <section id="how-it-works">
+        <HowItWorks />
+      </section>
       <X402Explainer />
       <LiveDemo />
       <UseCases />
-      <Tools />
-      <Integrations />
+      <section id="tools">
+        <Tools />
+      </section>
+      <section id="integrations">
+        <Integrations />
+      </section>
       <CodeTabs />
-      <Pricing />
-      <FAQ />
+      <section id="pricing">
+        <Pricing />
+      </section>
+      <section id="faq">
+        <FAQ />
+      </section>
       <Footer />
     </main>
   )

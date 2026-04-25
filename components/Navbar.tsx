@@ -37,6 +37,12 @@ export default function Navbar() {
             >
               GitHub
             </a>
+            <a
+              href="#code-examples"
+              className="text-sm font-mono font-semibold bg-[#4FC3F7] text-[#050508] px-3 py-1.5 rounded hover:bg-[#4FC3F7]/90 transition-colors"
+            >
+              Install
+            </a>
             <ConnectWallet />
           </div>
 
@@ -68,6 +74,13 @@ export default function Navbar() {
               {item}
             </a>
           ))}
+          <a
+            href="#code-examples"
+            className="text-sm font-mono font-semibold bg-[#4FC3F7] text-[#050508] px-3 py-1.5 rounded hover:bg-[#4FC3F7]/90 transition-colors text-center"
+            onClick={() => setOpen(false)}
+          >
+            Install
+          </a>
           <ConnectWallet />
         </div>
       )}
