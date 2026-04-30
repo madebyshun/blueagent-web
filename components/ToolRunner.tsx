@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useAccount, useSignTypedData } from "wagmi";
 import { TOOL_SCHEMAS } from "@/lib/tool-inputs";
+import { addRecord } from "@/lib/call-history";
 
 const USDC_BASE = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913" as const;
 
@@ -18,7 +19,17 @@ function usdcAmount(raw: string): string {
   return `$${(n / 1_000_000).toFixed(4)}`;
 }
 
-export default function ToolRunner({ toolId, price }: { toolId: string; price: string }) {
+export default function ToolRunner({
+  toolId,
+  price,
+  toolName,
+  category,
+}: {
+  toolId: string;
+  price: string;
+  toolName?: string;
+  category?: string;
+}) {
   const schema = TOOL_SCHEMAS[toolId];
   const { address, isConnected } = useAccount();
   const { signTypedDataAsync } = useSignTypedData();
@@ -35,6 +46,10 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
     .filter((f) => f.required)
     .every((f) => (values[f.name] ?? "").trim() !== "");
 
+  const priceUsd = parseFloat(price.replace("$", "")) || 0;
+  const name = toolName ?? toolId;
+  const cat = category ?? "Unknown";
+
   const run = async () => {
     if (!address) return;
     setStep("calling");
@@ -43,7 +58,6 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
     setPayAmount(null);
 
     try {
-      // Step 1 — initial call, expect 402
       const r1 = await fetch(`/api/tool/${toolId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,10 +68,10 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
       if (!d1.requiresPayment) {
         setResult(d1.result ?? d1);
         setStep("done");
+        addRecord({ toolId, toolName: name, category: cat, price, priceUsd, timestamp: Date.now(), status: "success", params: values, result: d1.result ?? d1 });
         return;
       }
 
-      // Step 2 — sign payment
       const accepts = d1.paymentDetails?.accepts?.[0];
       if (!accepts) throw new Error("Invalid 402 response from service.");
 
@@ -96,7 +110,6 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
         },
       });
 
-      // Step 3 — call with payment header
       setStep("paying");
       const payment = {
         x402Version: 1,
@@ -124,16 +137,18 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
       if (d2.error) throw new Error(typeof d2.error === "string" ? d2.error : JSON.stringify(d2.error));
       setResult(d2.result ?? d2);
       setStep("done");
+      addRecord({ toolId, toolName: name, category: cat, price, priceUsd, timestamp: Date.now(), status: "success", params: values, result: d2.result ?? d2 });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      setError(msg.includes("rejected") || msg.includes("denied") ? "Payment rejected in wallet." : msg);
+      const friendly = msg.includes("rejected") || msg.includes("denied") ? "Payment rejected in wallet." : msg;
+      setError(friendly);
       setStep("error");
+      addRecord({ toolId, toolName: name, category: cat, price, priceUsd: 0, timestamp: Date.now(), status: "error", params: values, error: friendly });
     }
   };
 
   return (
     <div className="space-y-4 pt-4 border-t border-[#1A1A2E] mt-2">
-      {/* Input fields */}
       {schema.fields.length > 0 && (
         <div className="space-y-3">
           {schema.fields.map((field) => (
@@ -146,9 +161,7 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
                 type={field.type === "number" ? "number" : "text"}
                 placeholder={field.placeholder}
                 value={values[field.name] ?? ""}
-                onChange={(e) =>
-                  setValues((prev) => ({ ...prev, [field.name]: e.target.value }))
-                }
+                onChange={(e) => setValues((prev) => ({ ...prev, [field.name]: e.target.value }))}
                 className="w-full bg-[#050508] border border-[#1A1A2E] rounded-lg px-3 py-2 font-mono text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-[#4FC3F7]/40 transition-colors"
               />
             </div>
@@ -156,12 +169,9 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
         </div>
       )}
 
-      {/* Run button / connect prompt */}
       {!isConnected ? (
         <div className="text-center py-3 border border-dashed border-[#1A1A2E] rounded-xl">
-          <p className="font-mono text-xs text-slate-500">
-            Connect wallet above to run this tool
-          </p>
+          <p className="font-mono text-xs text-slate-500">Connect wallet above to run this tool</p>
         </div>
       ) : (
         <button
@@ -176,14 +186,12 @@ export default function ToolRunner({ toolId, price }: { toolId: string; price: s
         </button>
       )}
 
-      {/* Error state */}
       {step === "error" && error && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
           <p className="font-mono text-xs text-red-400 leading-relaxed">{error}</p>
         </div>
       )}
 
-      {/* Result */}
       {step === "done" && result !== null && (
         <div>
           <div className="flex items-center gap-2 mb-2">

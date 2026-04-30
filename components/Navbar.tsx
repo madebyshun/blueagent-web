@@ -35,6 +35,12 @@ export default function Navbar() {
             >
               Docs
             </Link>
+            <Link
+              href="/dashboard"
+              className="text-sm text-slate-400 hover:text-[#4FC3F7] transition-colors font-mono"
+            >
+              Dashboard
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -100,6 +106,13 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
           >
             Docs
+          </Link>
+          <Link
+            href="/dashboard"
+            className="text-sm text-slate-400 hover:text-[#4FC3F7] font-mono"
+            onClick={() => setOpen(false)}
+          >
+            Dashboard
           </Link>
           <a
             href="#code-examples"
