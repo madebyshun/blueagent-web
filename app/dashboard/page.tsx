@@ -218,7 +218,7 @@ function HistoryView({ history, onClear }: { history: CallRecord[]; onClear: () 
                       {JSON.stringify(r.params, null, 2)}
                     </pre>
                   </div>
-                  {r.result && (
+                  {r.result != null && (
                     <div>
                       <p className="font-mono text-xs text-slate-600 mb-2 tracking-widest">RESULT</p>
                       <pre className="font-mono text-xs text-slate-300 bg-[#050508] rounded-lg p-3 overflow-x-auto max-h-48">
