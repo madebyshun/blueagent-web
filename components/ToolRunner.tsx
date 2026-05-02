@@ -80,6 +80,8 @@ export default function ToolRunner({
         throw new Error(`No payment requirements in 402 response: ${raw}`);
       }
 
+      const x402Version = (d1.paymentDetails?.x402Version as number) ?? 1;
+
       const { payTo, maxAmountRequired, asset, extra, scheme, network, maxTimeoutSeconds } = accepts;
       console.log("[x402] accepts[0]:", JSON.stringify(accepts, null, 2));
       setDebugAccepts(accepts as Record<string, unknown>);
@@ -121,7 +123,7 @@ export default function ToolRunner({
 
       setStep("paying");
       const payment = {
-        x402Version: 1,
+        x402Version,
         scheme: scheme ?? "exact",
         network: network ?? "base-mainnet",
         payload: {
