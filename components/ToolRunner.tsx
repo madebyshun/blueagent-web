@@ -39,6 +39,7 @@ export default function ToolRunner({
   const [result, setResult] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
   const [payAmount, setPayAmount] = useState<string | null>(null);
+  const [debugAccepts, setDebugAccepts] = useState<Record<string, unknown> | null>(null);
 
   if (!schema) return null;
 
@@ -56,6 +57,7 @@ export default function ToolRunner({
     setError(null);
     setResult(null);
     setPayAmount(null);
+    setDebugAccepts(null);
 
     try {
       const r1 = await fetch(`/api/tool/${toolId}`, {
@@ -80,6 +82,7 @@ export default function ToolRunner({
 
       const { payTo, maxAmountRequired, asset, extra, scheme, network, maxTimeoutSeconds } = accepts;
       console.log("[x402] accepts[0]:", JSON.stringify(accepts, null, 2));
+      setDebugAccepts(accepts as Record<string, unknown>);
       if (!payTo) throw new Error(`Missing payTo in 402 response. Keys: ${Object.keys(accepts).join(", ")}`);
       if (!maxAmountRequired) throw new Error("Missing maxAmountRequired in 402 response.");
       setPayAmount(usdcAmount(maxAmountRequired));
@@ -198,8 +201,16 @@ export default function ToolRunner({
       )}
 
       {step === "error" && error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 space-y-2">
           <p className="font-mono text-xs text-red-400 leading-relaxed">{error}</p>
+          {debugAccepts && (
+            <details className="mt-1">
+              <summary className="font-mono text-[10px] text-slate-600 cursor-pointer hover:text-slate-400">Payment requirements (debug)</summary>
+              <pre className="mt-1 font-mono text-[10px] text-slate-500 overflow-auto max-h-32 whitespace-pre-wrap break-all">
+                {JSON.stringify(debugAccepts, null, 2)}
+              </pre>
+            </details>
+          )}
         </div>
       )}
 
