@@ -4,6 +4,7 @@ import { useAccount, useConnect, useDisconnect } from "wagmi";
 import Link from "next/link";
 
 function WalletIcon({ name }: { name: string }) {
+
   if (name.toLowerCase().includes("coinbase"))
     return <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>;
   if (name.toLowerCase().includes("metamask"))
@@ -16,9 +17,11 @@ export default function ConnectWallet() {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setMounted(true);
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
     };
@@ -81,7 +84,9 @@ export default function ConnectWallet() {
             <p className="font-mono text-xs text-slate-400 font-semibold">Connect to Base</p>
             <p className="font-mono text-[10px] text-slate-600 mt-0.5">EOA wallet required for x402 payments</p>
           </div>
-          {connectors.map((connector) => (
+          {!mounted ? (
+            <div className="px-4 py-3 font-mono text-xs text-slate-600">Loading wallets…</div>
+          ) : connectors.map((connector) => (
             <button
               key={connector.uid}
               onClick={() => { connect({ connector }); setOpen(false); }}
