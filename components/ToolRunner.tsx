@@ -75,12 +75,12 @@ export default function ToolRunner({
       const accepts = d1.paymentDetails?.accepts?.[0];
       if (!accepts) throw new Error("Invalid 402 response from service.");
 
-      const { payTo, maxAmountRequired, asset, extra } = accepts;
+      const { payTo, maxAmountRequired, asset, extra, scheme, network, maxTimeoutSeconds } = accepts;
       setPayAmount(usdcAmount(maxAmountRequired));
       setStep("signing");
 
       const nonce = randomNonce();
-      const validBefore = BigInt(Math.floor(Date.now() / 1000) + 300);
+      const validBefore = BigInt(Math.floor(Date.now() / 1000) + (maxTimeoutSeconds ?? 300));
 
       const signature = await signTypedDataAsync({
         domain: {
@@ -113,8 +113,8 @@ export default function ToolRunner({
       setStep("paying");
       const payment = {
         x402Version: 1,
-        scheme: "exact",
-        network: "base-mainnet",
+        scheme: scheme ?? "exact",
+        network: network ?? "base-mainnet",
         payload: {
           signature,
           authorization: {

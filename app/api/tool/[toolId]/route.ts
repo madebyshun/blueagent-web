@@ -37,9 +37,10 @@ export async function POST(
   };
 
   if (payment) {
-    headers["X-Payment"] = Buffer.from(JSON.stringify(payment)).toString(
-      "base64"
-    );
+    const encoded = Buffer.from(JSON.stringify(payment)).toString("base64");
+    console.log("[x402] Sending payment:", JSON.stringify(payment, null, 2));
+    console.log("[x402] X-Payment header:", encoded);
+    headers["X-Payment"] = encoded;
   }
 
   let res: Response;
@@ -56,6 +57,7 @@ export async function POST(
   if (res.status === 402) {
     let data: unknown;
     try { data = await res.json(); } catch { data = {}; }
+    console.log("[x402] 402 response from bankr.bot:", JSON.stringify(data, null, 2));
     return NextResponse.json({ requiresPayment: true, paymentDetails: data });
   }
 
