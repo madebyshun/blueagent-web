@@ -73,9 +73,15 @@ export default function ToolRunner({
       }
 
       const accepts = d1.paymentDetails?.accepts?.[0];
-      if (!accepts) throw new Error("Invalid 402 response from service.");
+      if (!accepts) {
+        const raw = JSON.stringify(d1.paymentDetails);
+        throw new Error(`No payment requirements in 402 response: ${raw}`);
+      }
 
       const { payTo, maxAmountRequired, asset, extra, scheme, network, maxTimeoutSeconds } = accepts;
+      console.log("[x402] accepts[0]:", JSON.stringify(accepts, null, 2));
+      if (!payTo) throw new Error(`Missing payTo in 402 response. Keys: ${Object.keys(accepts).join(", ")}`);
+      if (!maxAmountRequired) throw new Error("Missing maxAmountRequired in 402 response.");
       setPayAmount(usdcAmount(maxAmountRequired));
       setStep("signing");
 
@@ -134,13 +140,18 @@ export default function ToolRunner({
         body: JSON.stringify({ toolParams: values, payment }),
       });
       const d2 = await r2.json();
+      if (d2.requiresPayment) {
+        const detail = d2.paymentDetails?.error ?? JSON.stringify(d2.paymentDetails);
+        throw new Error(`Payment rejected by server: ${detail}`);
+      }
       if (d2.error) throw new Error(typeof d2.error === "string" ? d2.error : JSON.stringify(d2.error));
       setResult(d2.result ?? d2);
       setStep("done");
       addRecord({ toolId, toolName: name, category: cat, price, priceUsd, timestamp: Date.now(), status: "success", params: values, result: d2.result ?? d2 });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : String(e);
-      const friendly = msg.includes("rejected") || msg.includes("denied") ? "Payment rejected in wallet." : msg;
+      const isWalletReject = (msg.includes("rejected") || msg.includes("denied")) && !msg.includes("server");
+      const friendly = isWalletReject ? "Payment rejected in wallet." : msg;
       setError(friendly);
       setStep("error");
       addRecord({ toolId, toolName: name, category: cat, price, priceUsd: 0, timestamp: Date.now(), status: "error", params: values, error: friendly });
