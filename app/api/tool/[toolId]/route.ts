@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BASE_URL = "https://x402.bankr.bot/0xf31f59e7b8b58555f7871f71973a394c4c8f1bffe5";
+const BASE_URL = "https://x402.bankr.bot/0xE6A556278aE9e1e80d586F05A91bc3518388dE08";
 
 type PaymentPayload = {
   x402Version: number;

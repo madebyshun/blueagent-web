@@ -112,7 +112,7 @@ function ToolModal({ tool, onClose }: { tool: Tool; onClose: () => void }) {
           </div>
 
           {/* Live tool runner */}
-          <ToolRunner toolId={tool.id} price={tool.price} />
+          <ToolRunner toolId={tool.id} price={tool.price} toolName={tool.name} category={tool.category} />
 
           {/* GitHub source */}
           <a
